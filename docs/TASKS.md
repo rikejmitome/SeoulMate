@@ -118,7 +118,7 @@ Definition of Done:
 
 Status:
 
-TODO
+DONE
 
 Priority:
 AUTO (inherits Epic)
@@ -161,7 +161,7 @@ Definition of Done:
 
 Status:
 
-TODO
+DONE
 
 Priority:
 AUTO (inherits Epic)
