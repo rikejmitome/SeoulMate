@@ -23,6 +23,7 @@ class _CreatePlaceScreenState extends ConsumerState<CreatePlaceScreen> {
   final _mapLinkController = TextEditingController();
   final _notesController = TextEditingController();
   String _category = _categories.first;
+  String _status = 'planned';
   bool _isSaving = false;
   String? _error;
 
@@ -74,11 +75,12 @@ class _CreatePlaceScreenState extends ConsumerState<CreatePlaceScreen> {
               naverMapsUrl: '',
               kakaoMapsUrl: '',
               notes: _notesController.text.trim(),
-              status: 'planned',
+              status: _status,
+              votes: const {},
               createdAt: DateTime.now(),
             ),
           );
-      if (mounted) context.pop();
+      if (mounted) context.pop(true);
     } catch (error) {
       if (mounted) {
         setState(() => _error = 'SeoulMate could not save this place. $error');
@@ -137,6 +139,18 @@ class _CreatePlaceScreenState extends ConsumerState<CreatePlaceScreen> {
                 onChanged: _isSaving
                     ? null
                     : (value) => setState(() => _category = value ?? _category),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              DropdownButtonFormField<String>(
+                initialValue: _status,
+                decoration: const InputDecoration(labelText: 'Visit status'),
+                items: const [
+                  DropdownMenuItem(value: 'planned', child: Text('Planned')),
+                  DropdownMenuItem(value: 'visited', child: Text('Visited')),
+                ],
+                onChanged: _isSaving
+                    ? null
+                    : (value) => setState(() => _status = value ?? _status),
               ),
               const SizedBox(height: AppSpacing.md),
               TextFormField(

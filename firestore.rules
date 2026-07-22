@@ -20,7 +20,8 @@ service cloud.firestore {
           && get(/databases/$(database)/documents/trips/$(tripId)).data.ownerId == request.auth.uid;
       }
       match /places/{placeId} {
-        allow read, create: if request.auth != null && request.auth.uid in get(/databases/$(database)/documents/trips/$(tripId)).data.memberIds;
+        allow read, create, update, delete: if request.auth != null
+          && request.auth.uid in get(/databases/$(database)/documents/trips/$(tripId)).data.memberIds;
       }
     }
   }

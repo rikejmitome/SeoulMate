@@ -29,7 +29,60 @@ class PlaceRepository {
         'kakaoMapsUrl': place.kakaoMapsUrl,
         'notes': place.notes,
         'status': place.status,
+        'votes': place.votes,
         'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+  Stream<Place?> watchPlace({
+    required String tripId,
+    required String placeId,
+  }) => _db
+      .collection('trips')
+      .doc(tripId)
+      .collection('places')
+      .doc(placeId)
+      .snapshots()
+      .map((document) => document.exists ? _placeFromDocument(document) : null);
+
+  Future<void> update({required String tripId, required Place place}) => _db
+      .collection('trips')
+      .doc(tripId)
+      .collection('places')
+      .doc(place.id)
+      .update({
+        'name': place.name,
+        'koreanName': place.koreanName,
+        'category': place.category,
+        'address': place.address,
+        'googleMapsUrl': place.googleMapsUrl,
+        'naverMapsUrl': place.naverMapsUrl,
+        'kakaoMapsUrl': place.kakaoMapsUrl,
+        'notes': place.notes,
+        'status': place.status,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+  Future<void> delete({required String tripId, required String placeId}) => _db
+      .collection('trips')
+      .doc(tripId)
+      .collection('places')
+      .doc(placeId)
+      .delete();
+
+  Future<void> setVote({
+    required String tripId,
+    required String placeId,
+    required String userId,
+    required String preference,
+  }) => _db
+      .collection('trips')
+      .doc(tripId)
+      .collection('places')
+      .doc(placeId)
+      .update({
+        'votes.$userId': preference,
+        'updatedAt': FieldValue.serverTimestamp(),
       });
 
   Place _placeFromDocument(DocumentSnapshot<Map<String, dynamic>> document) {
@@ -45,6 +98,7 @@ class PlaceRepository {
       kakaoMapsUrl: data['kakaoMapsUrl'] as String? ?? '',
       notes: data['notes'] as String? ?? '',
       status: data['status'] as String? ?? 'planned',
+      votes: Map<String, String>.from(data['votes'] as Map? ?? const {}),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }

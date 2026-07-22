@@ -9,6 +9,8 @@ import '../../features/auth/presentation/register_screen.dart';
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/places/presentation/create_place_screen.dart';
+import '../../features/places/presentation/edit_place_screen.dart';
+import '../../features/places/presentation/place_detail_screen.dart';
 import '../../features/places/presentation/places_screen.dart';
 import '../../features/trip/presentation/trip_detail_screen.dart';
 import '../../features/trip/presentation/trip_form_screen.dart';
@@ -99,6 +101,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/places/create',
         builder: (_, __) => const CreatePlaceScreen(),
+      ),
+      GoRoute(
+        path: '/places/:id',
+        builder: (_, state) =>
+            PlaceDetailScreen(placeId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/places/:id/edit',
+        builder: (_, state) =>
+            EditPlaceScreen(placeId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: '/trip/:id',

@@ -14,3 +14,14 @@ final activePlacesProvider = StreamProvider<List<Place>>((ref) {
   if (trip == null) return Stream.value(const []);
   return ref.watch(placeRepositoryProvider).watch(trip.id);
 });
+
+final activePlaceProvider = StreamProvider.family<Place?, String>((
+  ref,
+  placeId,
+) {
+  final trip = ref.watch(activeTripProvider);
+  if (trip == null) return Stream.value(null);
+  return ref
+      .watch(placeRepositoryProvider)
+      .watchPlace(tripId: trip.id, placeId: placeId);
+});
