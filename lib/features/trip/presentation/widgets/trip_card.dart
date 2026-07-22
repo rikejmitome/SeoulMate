@@ -4,16 +4,25 @@ import '../../../../core/theme/app_theme.dart';
 import '../../domain/trip.dart';
 
 class TripCard extends StatelessWidget {
-  const TripCard({required this.trip, required this.onTap, super.key});
+  const TripCard({
+    required this.trip,
+    required this.onTap,
+    this.onViewDetails,
+    this.isActive = false,
+    super.key,
+  });
 
   final Trip trip;
   final VoidCallback onTap;
+  final VoidCallback? onViewDetails;
+  final bool isActive;
 
   @override
   Widget build(BuildContext context) {
     final dates =
         '${_date(trip.startDate)} – ${_date(trip.endDate)} · ${trip.memberIds.length} travelers';
     return Card(
+      color: isActive ? AppColors.surfaceVariant : null,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
@@ -52,7 +61,14 @@ class TripCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right),
+              if (isActive)
+                const Icon(Icons.check_circle, color: AppColors.seoulBlue),
+              if (onViewDetails != null)
+                IconButton(
+                  tooltip: 'View trip details',
+                  onPressed: onViewDetails,
+                  icon: const Icon(Icons.chevron_right),
+                ),
             ],
           ),
         ),

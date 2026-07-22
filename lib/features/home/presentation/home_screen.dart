@@ -6,7 +6,9 @@ import '../../../core/theme/app_theme.dart';
 import '../../../features/auth/presentation/auth_providers.dart';
 import '../../../features/trip/presentation/trip_providers.dart';
 import '../../../features/trip/presentation/widgets/trip_card.dart';
+import '../../../features/trip/presentation/widgets/trip_selector.dart';
 import '../../../shared/widgets/app_primary_button.dart';
+import '../../../shared/widgets/app_ui.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -35,42 +37,43 @@ class HomeScreen extends ConsumerWidget {
             ),
             const SizedBox(height: AppSpacing.xl),
             if (activeTrip == null)
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Icon(
-                        Icons.map_outlined,
-                        color: AppColors.haechiGold,
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      Text(
-                        'Your Korean adventure starts here.',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      const Text(
-                        'Create your first trip and give every plan, place and memory a home.',
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-                      AppPrimaryButton(
-                        label: 'Create your first trip',
-                        onPressed: () => context.push('/trip/new'),
-                      ),
-                    ],
-                  ),
+              AppCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.map_outlined, color: AppColors.haechiGold),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      'Your Korean adventure starts here.',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    const Text(
+                      'Create your first trip and give every plan, place and memory a home.',
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppPrimaryButton(
+                      label: 'Create your first trip',
+                      onPressed: () => context.push('/trip/new'),
+                    ),
+                  ],
                 ),
               )
             else ...[
-              Text(
-                'Your trip',
-                style: Theme.of(context).textTheme.headlineSmall,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Your trip',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const TripSelector(compact: true),
+                ],
               ),
               const SizedBox(height: AppSpacing.md),
               TripCard(
                 trip: activeTrip,
+                isActive: true,
                 onTap: () => context.push('/trip/${activeTrip.id}'),
               ),
             ],

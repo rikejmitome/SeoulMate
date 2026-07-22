@@ -101,5 +101,26 @@ ThemeData buildAppTheme() {
         borderRadius: BorderRadius.circular(AppRadius.standard),
       ),
     ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: AppColors.surface,
+      indicatorColor: AppColors.seoulBlue.withValues(alpha: .14),
+      labelTextStyle: WidgetStatePropertyAll(
+        TextStyle(fontWeight: FontWeight.w600, color: AppColors.primaryText),
+      ),
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.background,
+      foregroundColor: AppColors.primaryText,
+      elevation: 0,
+      centerTitle: false,
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size.fromHeight(52),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.small),
+        ),
+      ),
+    ),
   );
 }

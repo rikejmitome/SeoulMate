@@ -42,7 +42,7 @@ class TripRepository {
     });
   }
 
-  Future<void> createTrip({
+  Future<String> createTrip({
     required TripDraft draft,
     required User owner,
   }) async {
@@ -72,6 +72,7 @@ class TripRepository {
       'joinedAt': FieldValue.serverTimestamp(),
     });
     await batch.commit();
+    return trip.id;
   }
 
   Future<void> updateTrip({required String tripId, required TripDraft draft}) {

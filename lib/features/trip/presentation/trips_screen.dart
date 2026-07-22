@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import 'trip_providers.dart';
 import 'widgets/trip_card.dart';
+import 'widgets/trip_selector.dart';
+import '../../../shared/widgets/app_ui.dart';
 
 class TripsScreen extends ConsumerWidget {
   const TripsScreen({super.key});
@@ -12,19 +14,27 @@ class TripsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final trips = ref.watch(tripsProvider);
+    final activeTripId = ref.watch(activeTripProvider)?.id;
     return Scaffold(
-      appBar: AppBar(title: const Text('Trips')),
+      appBar: AppBar(
+        title: const Text('Trips'),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 8),
+            child: TripSelector(compact: true),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/trip/new'),
         icon: const Icon(Icons.add),
         label: const Text('Create trip'),
       ),
       body: trips.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => _TripMessage(
-          icon: Icons.cloud_off_outlined,
-          title: 'Your trips are unavailable right now.',
-          message: 'Please check your connection and try again.',
+        loading: () => const AppLoadingState(label: 'Finding your journeys…'),
+        error: (_, __) => const AppErrorState(
+          message:
+              'Your trips are unavailable right now. Please check your connection and try again.',
         ),
         data: (items) => items.isEmpty
             ? _TripMessage(
@@ -39,7 +49,11 @@ class TripsScreen extends ConsumerWidget {
                     const SizedBox(height: AppSpacing.sm),
                 itemBuilder: (context, index) => TripCard(
                   trip: items[index],
-                  onTap: () => context.push('/trip/${items[index].id}'),
+                  isActive: items[index].id == activeTripId,
+                  onTap: () => ref
+                      .read(selectedTripIdProvider.notifier)
+                      .selectTrip(items[index].id),
+                  onViewDetails: () => context.push('/trip/${items[index].id}'),
                 ),
               ),
       ),

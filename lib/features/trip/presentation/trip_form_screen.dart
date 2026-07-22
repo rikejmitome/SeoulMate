@@ -86,7 +86,8 @@ class _TripFormScreenState extends ConsumerState<TripFormScreen> {
         final owner = ref.read(authRepositoryProvider).currentUser;
         if (owner == null)
           throw StateError('Please sign in again to create a trip.');
-        await repository.createTrip(draft: draft, owner: owner);
+        final tripId = await repository.createTrip(draft: draft, owner: owner);
+        await ref.read(selectedTripIdProvider.notifier).selectTrip(tripId);
       } else {
         await repository.updateTrip(tripId: widget.tripId!, draft: draft);
       }

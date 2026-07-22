@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../features/auth/presentation/auth_providers.dart';
 import '../../features/auth/presentation/forgot_password_screen.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
-import '../../features/trip/presentation/trip_form_screen.dart';
+import '../../features/places/presentation/create_place_screen.dart';
+import '../../features/places/presentation/places_screen.dart';
 import '../../features/trip/presentation/trip_detail_screen.dart';
+import '../../features/trip/presentation/trip_form_screen.dart';
 import '../../features/trip/presentation/trip_members_screen.dart';
 import '../../features/trip/presentation/trips_screen.dart';
 import '../../shared/widgets/context_screen.dart';
@@ -30,8 +33,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       if (auth.isAuthenticated &&
           (location == '/login' ||
               location == '/register' ||
-              location == '/forgot-password'))
+              location == '/forgot-password')) {
         return '/home';
+      }
       return null;
     },
     routes: [
@@ -59,12 +63,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/places',
-                builder: (_, __) => const ContextScreen(
-                  title: 'Places',
-                  icon: Icons.place_outlined,
-                  message:
-                      'Keep every restaurant, café and hidden gem close to your journey.',
-                ),
+                builder: (_, __) => const PlacesScreen(),
               ),
             ],
           ),
@@ -97,6 +96,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ],
       ),
       GoRoute(path: '/trip/new', builder: (_, __) => const TripFormScreen()),
+      GoRoute(
+        path: '/places/create',
+        builder: (_, __) => const CreatePlaceScreen(),
+      ),
       GoRoute(
         path: '/trip/:id',
         builder: (_, state) =>
