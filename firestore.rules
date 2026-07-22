@@ -22,6 +22,18 @@ service cloud.firestore {
       match /places/{placeId} {
         allow read, create, update, delete: if request.auth != null
           && request.auth.uid in get(/databases/$(database)/documents/trips/$(tripId)).data.memberIds;
+        match /votes/{userId} {
+          allow read: if request.auth != null
+            && request.auth.uid in get(/databases/$(database)/documents/trips/$(tripId)).data.memberIds;
+          allow create, update: if request.auth != null
+            && request.auth.uid == userId
+            && request.resource.data.userId == request.auth.uid
+            && request.resource.data.choice in ['want', 'maybe', 'skip']
+            && request.auth.uid in get(/databases/$(database)/documents/trips/$(tripId)).data.memberIds;
+          allow delete: if request.auth != null
+            && request.auth.uid == userId
+            && request.auth.uid in get(/databases/$(database)/documents/trips/$(tripId)).data.memberIds;
+        }
       }
     }
   }

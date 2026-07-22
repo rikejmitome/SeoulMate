@@ -15,7 +15,6 @@ abstract class Place with _$Place {
     required String kakaoMapsUrl,
     required String notes,
     required String status,
-    required Map<String, String> votes,
     required DateTime createdAt,
   }) = _Place;
 }

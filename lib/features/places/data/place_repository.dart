@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../domain/place.dart';
+import '../domain/place_vote.dart';
 
 class PlaceRepository {
   PlaceRepository(this._db);
@@ -29,7 +30,6 @@ class PlaceRepository {
         'kakaoMapsUrl': place.kakaoMapsUrl,
         'notes': place.notes,
         'status': place.status,
-        'votes': place.votes,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
       });
@@ -70,20 +70,36 @@ class PlaceRepository {
       .doc(placeId)
       .delete();
 
-  Future<void> setVote({
+  Stream<List<PlaceVote>> watchVotes({
+    required String tripId,
+    required String placeId,
+  }) => _votes(tripId: tripId, placeId: placeId).snapshots().map(
+    (snapshot) => snapshot.docs.map(_voteFromDocument).toList(),
+  );
+
+  Future<void> saveVote({
+    required String tripId,
+    required String placeId,
+    required PlaceVote vote,
+  }) => _votes(tripId: tripId, placeId: placeId).doc(vote.userId).set({
+    'userId': vote.userId,
+    'displayName': vote.displayName,
+    'choice': vote.choice.name,
+    'updatedAt': FieldValue.serverTimestamp(),
+  });
+
+  Future<void> removeVote({
     required String tripId,
     required String placeId,
     required String userId,
-    required String preference,
-  }) => _db
-      .collection('trips')
-      .doc(tripId)
-      .collection('places')
-      .doc(placeId)
-      .update({
-        'votes.$userId': preference,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
+  }) => _votes(tripId: tripId, placeId: placeId).doc(userId).delete();
+
+  CollectionReference<Map<String, dynamic>> _votes({
+    required String tripId,
+    required String placeId,
+  }) => _db.collection(
+    PlaceVotePath.collection(tripId: tripId, placeId: placeId),
+  );
 
   Place _placeFromDocument(DocumentSnapshot<Map<String, dynamic>> document) {
     final data = document.data()!;
@@ -98,8 +114,20 @@ class PlaceRepository {
       kakaoMapsUrl: data['kakaoMapsUrl'] as String? ?? '',
       notes: data['notes'] as String? ?? '',
       status: data['status'] as String? ?? 'planned',
-      votes: Map<String, String>.from(data['votes'] as Map? ?? const {}),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    );
+  }
+
+  PlaceVote _voteFromDocument(DocumentSnapshot<Map<String, dynamic>> document) {
+    final data = document.data()!;
+    return PlaceVote(
+      userId: data['userId'] as String? ?? document.id,
+      displayName: data['displayName'] as String? ?? 'Traveler',
+      choice: VoteChoice.values.firstWhere(
+        (choice) => choice.name == data['choice'],
+        orElse: () => VoteChoice.maybe,
+      ),
+      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 }

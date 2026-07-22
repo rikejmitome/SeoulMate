@@ -8,6 +8,7 @@ import '../../../shared/widgets/app_ui.dart';
 import '../../trip/presentation/trip_providers.dart';
 import '../../trip/presentation/widgets/trip_selector.dart';
 import '../domain/place.dart';
+import '../domain/place_vote.dart';
 import 'place_providers.dart';
 
 class PlacesScreen extends ConsumerStatefulWidget {
@@ -275,67 +276,102 @@ class _PlaceFilters extends StatelessWidget {
 
 enum _PlaceSort { recent, name, status }
 
-class _PlaceCard extends StatelessWidget {
+class _PlaceCard extends ConsumerWidget {
   const _PlaceCard({required this.place, required this.onTap});
 
   final Place place;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => AppCard(
-    child: InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadius.standard),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.sm),
-            decoration: const BoxDecoration(
-              color: AppColors.surfaceVariant,
-              shape: BoxShape.circle,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final votes = ref.watch(activePlaceVotesProvider(place.id));
+    return AppCard(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.standard),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              decoration: const BoxDecoration(
+                color: AppColors.surfaceVariant,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.place_outlined,
+                color: AppColors.seoulBlue,
+              ),
             ),
-            child: const Icon(Icons.place_outlined, color: AppColors.seoulBlue),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(place.name, style: Theme.of(context).textTheme.titleLarge),
-                if (place.koreanName.isNotEmpty) ...[
-                  const SizedBox(height: AppSpacing.xs),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    place.koreanName,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    place.name,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
-                ],
-                const SizedBox(height: AppSpacing.sm),
-                Wrap(
-                  spacing: AppSpacing.sm,
-                  runSpacing: AppSpacing.xs,
-                  children: [
-                    Chip(label: Text(place.category)),
-                    Chip(
-                      label: Text(
-                        place.status == 'visited' ? 'Visited' : 'Planned',
-                      ),
+                  if (place.koreanName.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      place.koreanName,
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
-                ),
-                if (place.address.isNotEmpty) ...[
                   const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    place.address,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  Wrap(
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.xs,
+                    children: [
+                      Chip(label: Text(place.category)),
+                      Chip(
+                        label: Text(
+                          place.status == 'visited' ? 'Visited' : 'Planned',
+                        ),
+                      ),
+                    ],
                   ),
+                  votes.when(
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, __) => const SizedBox.shrink(),
+                    data: (items) => _CompactVoteSummary(votes: items),
+                  ),
+                  if (place.address.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      place.address,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
-          const Icon(Icons.chevron_right),
-        ],
+            const Icon(Icons.chevron_right),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
+}
+
+class _CompactVoteSummary extends StatelessWidget {
+  const _CompactVoteSummary({required this.votes});
+
+  final List<PlaceVote> votes;
+
+  @override
+  Widget build(BuildContext context) {
+    final totals = PlaceVoting.totals(votes);
+    if (totals.want + totals.maybe + totals.skip == 0) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.sm),
+      child: Text(
+        'Want ${totals.want} · Maybe ${totals.maybe} · Skip ${totals.skip}',
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+    );
+  }
 }

@@ -7,6 +7,7 @@ import '../../../shared/widgets/app_ui.dart';
 import '../../auth/presentation/auth_providers.dart';
 import '../../trip/presentation/trip_providers.dart';
 import '../domain/place.dart';
+import '../domain/place_vote.dart';
 import 'place_providers.dart';
 
 class PlaceDetailScreen extends ConsumerWidget {
@@ -48,7 +49,6 @@ class _PlaceDetail extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final trip = ref.watch(activeTripProvider);
-    final userId = ref.watch(authRepositoryProvider).currentUser?.uid;
     return Scaffold(
       appBar: AppBar(
         title: Text(place.name),
@@ -115,11 +115,7 @@ class _PlaceDetail extends ConsumerWidget {
             const SizedBox(height: AppSpacing.lg),
             _DetailSection(
               title: 'Group decision',
-              child: _VoteControls(
-                place: place,
-                tripId: trip?.id,
-                userId: userId,
-              ),
+              child: _VoteSection(placeId: placeId, tripId: trip?.id),
             ),
           ],
         ),
@@ -195,76 +191,186 @@ class _DetailSection extends StatelessWidget {
   );
 }
 
-class _VoteControls extends ConsumerWidget {
-  const _VoteControls({
-    required this.place,
-    required this.tripId,
-    required this.userId,
-  });
+class _VoteSection extends ConsumerWidget {
+  const _VoteSection({required this.placeId, required this.tripId});
 
-  final Place place;
+  final String placeId;
   final String? tripId;
-  final String? userId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (tripId == null || userId == null) {
+    final user = ref.watch(authRepositoryProvider).currentUser;
+    final profile = ref.watch(userProfileProvider).asData?.value;
+    final votes = ref.watch(activePlaceVotesProvider(placeId));
+    if (tripId == null || user == null) {
       return const Text('Sign in to share your preference.');
     }
-    final currentVote = place.votes[userId];
-    return Wrap(
-      spacing: AppSpacing.sm,
-      runSpacing: AppSpacing.sm,
-      children: [
-        _VoteChip(
-          label: 'Want',
-          selected: currentVote == 'want',
-          onSelected: () => _setVote(ref, tripId!, userId!, 'want'),
-        ),
-        _VoteChip(
-          label: 'Maybe',
-          selected: currentVote == 'maybe',
-          onSelected: () => _setVote(ref, tripId!, userId!, 'maybe'),
-        ),
-        _VoteChip(
-          label: 'Skip',
-          selected: currentVote == 'skip',
-          onSelected: () => _setVote(ref, tripId!, userId!, 'skip'),
-        ),
-      ],
+
+    return votes.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(AppSpacing.sm),
+        child: CircularProgressIndicator(),
+      ),
+      error: (_, __) => const AppErrorState(
+        message: 'Votes are unavailable right now. Please try again.',
+      ),
+      data: (items) {
+        final currentVote = items.cast<PlaceVote?>().firstWhere(
+          (vote) => vote?.userId == user.uid,
+          orElse: () => null,
+        );
+        final displayName = profile?.displayName.isNotEmpty == true
+            ? profile!.displayName
+            : user.displayName?.trim().isNotEmpty == true
+            ? user.displayName!.trim()
+            : user.email ?? 'Traveler';
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              currentVote == null
+                  ? 'Choose how you feel about this place.'
+                  : 'Your vote: ${currentVote.choice.label}. Tap it again to remove it.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
+              children: VoteChoice.values
+                  .map(
+                    (choice) => ChoiceChip(
+                      label: Text(choice.label),
+                      selected: currentVote?.choice == choice,
+                      onSelected: (_) => _changeVote(
+                        context,
+                        ref,
+                        userId: user.uid,
+                        displayName: displayName,
+                        currentVote: currentVote,
+                        nextChoice: choice,
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            _VoteGroups(votes: items),
+          ],
+        );
+      },
     );
   }
 
-  Future<void> _setVote(
-    WidgetRef ref,
-    String tripId,
-    String userId,
-    String preference,
-  ) => ref
-      .read(placeRepositoryProvider)
-      .setVote(
-        tripId: tripId,
-        placeId: place.id,
-        userId: userId,
-        preference: preference,
-      );
+  Future<void> _changeVote(
+    BuildContext context,
+    WidgetRef ref, {
+    required String userId,
+    required String displayName,
+    required PlaceVote? currentVote,
+    required VoteChoice nextChoice,
+  }) async {
+    try {
+      final repository = ref.read(placeRepositoryProvider);
+      if (currentVote?.choice == nextChoice) {
+        await repository.removeVote(
+          tripId: tripId!,
+          placeId: placeId,
+          userId: userId,
+        );
+      } else {
+        await repository.saveVote(
+          tripId: tripId!,
+          placeId: placeId,
+          vote: PlaceVote(
+            userId: userId,
+            displayName: displayName,
+            choice: nextChoice,
+            updatedAt: DateTime.now(),
+          ),
+        );
+      }
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not update your vote: $error')),
+        );
+      }
+    }
+  }
 }
 
-class _VoteChip extends StatelessWidget {
-  const _VoteChip({
-    required this.label,
-    required this.selected,
-    required this.onSelected,
-  });
+class _VoteGroups extends StatelessWidget {
+  const _VoteGroups({required this.votes});
 
-  final String label;
-  final bool selected;
-  final VoidCallback onSelected;
+  final List<PlaceVote> votes;
 
   @override
-  Widget build(BuildContext context) => ChoiceChip(
-    label: Text(label),
-    selected: selected,
-    onSelected: (_) => onSelected(),
+  Widget build(BuildContext context) {
+    final totals = PlaceVoting.totals(votes);
+    return Column(
+      children: VoteChoice.values
+          .map(
+            (choice) => _VoteGroup(
+              choice: choice,
+              votes: votes.where((vote) => vote.choice == choice).toList(),
+              total: switch (choice) {
+                VoteChoice.want => totals.want,
+                VoteChoice.maybe => totals.maybe,
+                VoteChoice.skip => totals.skip,
+              },
+            ),
+          )
+          .toList(),
+    );
+  }
+}
+
+class _VoteGroup extends StatelessWidget {
+  const _VoteGroup({
+    required this.choice,
+    required this.votes,
+    required this.total,
+  });
+
+  final VoteChoice choice;
+  final List<PlaceVote> votes;
+  final int total;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+    child: Row(
+      children: [
+        SizedBox(width: 64, child: Text('${choice.label} $total')),
+        Expanded(
+          child: Wrap(
+            spacing: AppSpacing.xs,
+            runSpacing: AppSpacing.xs,
+            children: votes
+                .map(
+                  (vote) => Tooltip(
+                    message: vote.displayName,
+                    child: CircleAvatar(
+                      radius: 13,
+                      backgroundColor: AppColors.surfaceVariant,
+                      foregroundColor: AppColors.seoulBlue,
+                      child: Text(_initials(vote.displayName)),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+      ],
+    ),
   );
+
+  String _initials(String name) {
+    final words = name
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((word) => word.isNotEmpty);
+    return words.take(2).map((word) => word[0].toUpperCase()).join();
+  }
 }

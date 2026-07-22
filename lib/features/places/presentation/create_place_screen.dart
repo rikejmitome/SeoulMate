@@ -76,7 +76,6 @@ class _CreatePlaceScreenState extends ConsumerState<CreatePlaceScreen> {
               kakaoMapsUrl: '',
               notes: _notesController.text.trim(),
               status: _status,
-              votes: const {},
               createdAt: DateTime.now(),
             ),
           );
