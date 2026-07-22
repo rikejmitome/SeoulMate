@@ -294,7 +294,7 @@ CRITICAL
 
 Status:
 
-TODO
+DONE
 
 Priority:
 AUTO (inherits Epic)
@@ -336,7 +336,7 @@ Trip can be created and stored.
 
 Status:
 
-TODO
+DONE
 
 Priority:
 AUTO (inherits Epic)
@@ -383,7 +383,7 @@ CRITICAL
 
 Status:
 
-TODO
+DONE
 
 Priority:
 AUTO (inherits Epic)
