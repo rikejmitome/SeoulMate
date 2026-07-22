@@ -208,7 +208,7 @@ CRITICAL
 
 Status:
 
-TODO
+DONE
 
 Priority:
 AUTO (inherits Epic)
@@ -248,7 +248,7 @@ User can securely access the application.
 
 Status:
 
-TODO
+DONE
 
 Priority:
 AUTO (inherits Epic)
