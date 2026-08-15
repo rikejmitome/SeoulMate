@@ -76,6 +76,28 @@ class HomeScreen extends ConsumerWidget {
                 isActive: true,
                 onTap: () => context.push('/trip/${activeTrip.id}'),
               ),
+              const SizedBox(height: AppSpacing.lg),
+              AppCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Itinerary',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    const Text(
+                      'Shape each day of your selected trip before the adventure begins.',
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    OutlinedButton.icon(
+                      onPressed: () => context.push('/trip/days'),
+                      icon: const Icon(Icons.calendar_month_outlined),
+                      label: const Text('Manage trip days'),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ],
         ),

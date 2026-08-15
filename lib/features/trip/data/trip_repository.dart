@@ -89,9 +89,13 @@ class TripRepository {
   Future<void> deleteTrip(String tripId) async {
     final trip = _trips.doc(tripId);
     final members = await trip.collection('members').get();
+    final days = await trip.collection('days').get();
     final batch = _firestore.batch();
     for (final member in members.docs) {
       batch.delete(member.reference);
+    }
+    for (final day in days.docs) {
+      batch.delete(day.reference);
     }
     batch.delete(trip);
     await batch.commit();

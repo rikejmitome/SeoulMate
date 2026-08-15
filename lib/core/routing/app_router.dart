@@ -16,6 +16,9 @@ import '../../features/trip/presentation/trip_detail_screen.dart';
 import '../../features/trip/presentation/trip_form_screen.dart';
 import '../../features/trip/presentation/trip_members_screen.dart';
 import '../../features/trip/presentation/trips_screen.dart';
+import '../../features/trip_days/presentation/trip_day_detail_screen.dart';
+import '../../features/trip_days/presentation/trip_day_form_screen.dart';
+import '../../features/trip_days/presentation/trip_days_screen.dart';
 import '../../shared/widgets/context_screen.dart';
 import 'app_shell.dart';
 
@@ -98,6 +101,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ],
       ),
       GoRoute(path: '/trip/new', builder: (_, __) => const TripFormScreen()),
+      GoRoute(path: '/trip/days', builder: (_, __) => const TripDaysScreen()),
+      GoRoute(
+        path: '/trip/days/new',
+        builder: (_, __) => const TripDayFormScreen(),
+      ),
+      GoRoute(
+        path: '/trip/days/:id',
+        builder: (_, state) =>
+            TripDayDetailScreen(dayId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/trip/days/:id/edit',
+        builder: (_, state) =>
+            TripDayFormScreen(dayId: state.pathParameters['id']!),
+      ),
       GoRoute(
         path: '/places/create',
         builder: (_, __) => const CreatePlaceScreen(),

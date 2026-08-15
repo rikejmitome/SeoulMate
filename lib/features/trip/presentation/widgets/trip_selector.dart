@@ -20,6 +20,12 @@ class TripSelector extends ConsumerWidget {
 
     return OutlinedButton.icon(
       onPressed: () => _showTripPicker(context, ref, trips, activeTrip?.id),
+      style: compact
+          ? OutlinedButton.styleFrom(
+              minimumSize: const Size(0, 40),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+            )
+          : null,
       icon: const Icon(Icons.swap_horiz, size: 18),
       label: compact
           ? const Text('Switch')
