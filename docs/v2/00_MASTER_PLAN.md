@@ -535,9 +535,11 @@ Mobilní aplikace musí umožnit:
 
 Desktop smí stejné úlohy zpříjemnit, ale nesmí být vyžadován.
 
-### 7.20 Haechi
+### 7.20 Bomi — Haechi SeoulMate
 
-Haechi je moderní emocionální průvodce a vizuální identita, nikoli placený cloudový chatbot.
+Bomi je finální jméno a podoba Haechiho pro SeoulMate. Je moderním emocionálním průvodcem a vizuální identitou aplikace, nikoli placeným cloudovým chatbotem.
+
+Bomi má měkkou, jednoduchou a snadno čitelnou siluetu inspirovanou moderním soulským Haechim: pudrově růžové tělo, světle krémově růžové bříško, malé modrozelené rohy, drobná růžová křídla a výrazný růžovo-teal pruhovaný ocas. Nemá permanentní oblečení ani doplněk; cestovní předměty používá pouze podle situace. Je klidný, laskavý, přátelský a podporující, ne hyperaktivní ani infantilní.
 
 Má definované stavy:
 
@@ -1073,6 +1075,6 @@ SeoulMate v2.0 je hotový, když:
 5. Local-first a offline-first jsou základ architektury.
 6. Nulové provozní náklady jsou tvrdá podmínka.
 7. Cloudové služby jsou nahraditelné synchronizační doplňky.
-8. Haechi je pravidlový kontextový průvodce, ne placený chatbot.
+8. Bomi je finální Haechi SeoulMate: pravidlový kontextový průvodce a maskot, ne placený chatbot.
 9. Vizuální systém se řeší před rozsáhlou implementací UI.
 10. Codex a Claude Code pracují podle stejné dokumentace, acceptance criteria a quality gates.
