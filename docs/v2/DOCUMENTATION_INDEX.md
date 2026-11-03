@@ -2,7 +2,7 @@
 
 **Verze:** 2.0  
 **Stav:** APPROVED SPECIFICATION  
-**Poslední aktualizace:** 15. srpna 2026  
+**Poslední aktualizace:** 3. listopadu 2026  
 **Nadřazený plán:** [00_MASTER_PLAN.md](00_MASTER_PLAN.md)
 
 ---
@@ -25,8 +25,8 @@ docs/v2/
 │   ├── 06_INFORMATION_ARCHITECTURE.md     # Navigační struktura a strom modulů
 │   ├── 07_SCREEN_CATALOG.md               # Katalog 26 obrazovek
 │   ├── 08_UX_SPECIFICATION.md             # Pravidla pro "Co teď?", Show to Local a stres
-│   ├── 09_DESIGN_SYSTEM.md                # Paleta Hanok/Dancheong, Pretendard, komponenty
-│   ├── 10_HAECHI_GUIDE.md                 # 11 stavů maskota Haechiho a šablony
+│   ├── 09_DESIGN_SYSTEM.md                # Schválená cream/ink/pastel paleta, light/dark, komponenty
+│   ├── 10_HAECHI_GUIDE.md                 # Finální Bomi vzhled, osobnost, stavy a asset pravidla
 │   └── 11_CONTENT_STRATEGY.md             # Česká fonetika, alergeny, jídla a fráze
 │
 ├── [TECHNICKÁ A SYSTÉMOVÁ ARCHITEKTURA]
