@@ -2,7 +2,7 @@
 
 **Verze:** 2.0  
 **Stav:** APPROVED SPECIFICATION  
-**Poslední aktualizace:** 15. srpna 2026  
+**Poslední aktualizace:** 3. listopadu 2026  
 **Nadřazený dokument:** [00_MASTER_PLAN.md](00_MASTER_PLAN.md)  
 **Rozcestník:** [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)
 
@@ -34,3 +34,18 @@
 - **Kontext:** Omezená kapacita a blížící se termín cesty.
 - **Rozhodnutí:** Vývoj 100% soustředit na mobilní platformy (Android + iOS). Desktop (Windows/macOS) odložit na P2.
 - **Důsledek:** Rychlejší dokončení stabilní mobilní aplikace použitelné v Koreji.
+
+### ADR-06: Vizuální směr SeoulMate v2.0
+- **Kontext:** Původní Dancheong červeno-modro-zlatá paleta neodpovídá schválenému směru produktu.
+- **Rozhodnutí:** Použít moderní Korean + lightly playful design: krémový základ, inkoustově modrá primary, soft blue pro Dream, sage pro Adventure, peach/muted pink pro Memories a jemný dark blue-gray dark mode.
+- **Důsledek:** `09_DESIGN_SYSTEM.md` je jediný závazný zdroj barevných tokenů a UI pravidel.
+
+### ADR-07: Bomi je finální Haechi SeoulMate
+- **Kontext:** Bylo testováno více vizuálních konceptů maskota.
+- **Rozhodnutí:** Finálním maskotem je Bomi: měkký růžový Haechi s krémovým bříškem, modrozelenými rohy/detaily, malými růžovými křídly a růžovo-teal pruhovaným ocasem. Bomi je klidný, laskavý a podporující.
+- **Důsledek:** Obecné nebo alternativní Haechi návrhy se nesmí používat jako produkční reference. Závazný popis je v `10_HAECHI_GUIDE.md`.
+
+### ADR-08: Bomi má střední vizuální přítomnost
+- **Kontext:** Maskot má dodat osobnost, ale nesmí rušit praktickou cestovní aplikaci.
+- **Rozhodnutí:** Bomi se používá hlavně na Home, onboardingu, empty states, achievements a kontextových momentech. Emergency, Show to Local, mapa a husté formuláře dávají přednost informaci před ilustrací.
+- **Důsledek:** Bomi není permanentní overlay ani dominantní dekorace každé obrazovky.
